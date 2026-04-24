@@ -1,0 +1,49 @@
+server:
+  port: 8081
+  mode: debug  # debug | release
+
+database:
+  host: 10.25.65.177
+  port: 8306
+  name: letter_manage_db
+  user: root
+  password: "000000"
+  charset: utf8mb4
+  max_open_conns: 25
+  max_idle_conns: 10
+
+llm:
+  api_key: "sk-d0cd677143b045e1b65600d6ace3f8ec"
+  api_url: "https://api.deepseek.com/v1/chat/completions"
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 4096
+
+map:
+  amap_key: "29d444706a1181810a5075520a51569a"
+  amap_geocode_url: "https://restapi.amap.com/v3/geocode/geo"
+  amap_regeocode_url: "https://restapi.amap.com/v3/geocode/regeo"
+  amap_poi_url: "https://restapi.amap.com/v3/place/text"
+  amap_around_url: "https://restapi.amap.com/v3/place/around"
+  amap_input_tips_url: "https://restapi.amap.com/v3/assistant/inputtips"
+
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+    - "http://localhost:3000"
+    - "http://localhost:5174"
+    - "http://127.0.0.1:5173"
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+
+wechat:
+  miniprogram:
+    app_id: "your_wx_miniprogram_appid"
+    app_secret: "your_wx_miniprogram_secret"
+  open:
+    app_id: "your_wx_open_appid"
+    app_secret: "your_wx_open_secret"
