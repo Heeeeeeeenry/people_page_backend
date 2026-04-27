@@ -28,8 +28,8 @@ func EnsureCitizenTable() error {
 func CreateCitizen(phone string) (*model.CitizenUser, error) {
 	now := time.Now().Format("2006-01-02 15:04:05")
 	_, err := DB.Exec(
-		"INSERT INTO citizen_users (phone, created_at, updated_at) VALUES (?, ?, ?)",
-		phone, now, now,
+		"INSERT INTO citizen_users (phone, wx_openid, created_at, updated_at) VALUES (?, ?, ?, ?)",
+		phone, phone, now, now,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("创建用户失败: %w", err)

@@ -71,7 +71,7 @@ func RegisterByCode(phone, code, password string) (*model.CitizenUser, string, e
 	return user, token, nil
 }
 
-// LoginByCode 验证码登录（已有用户）
+// LoginByCode 验证码登录（首次自动创建用户）
 func LoginByCode(phone, code string) (*model.CitizenUser, string, error) {
 	if err := verifySMSCode(phone, code); err != nil {
 		return nil, "", err
@@ -79,7 +79,11 @@ func LoginByCode(phone, code string) (*model.CitizenUser, string, error) {
 
 	user, err := dao.GetCitizenByPhone(phone)
 	if err != nil {
-		return nil, "", fmt.Errorf("该手机号未注册，请先注册")
+		// 首次验证码登录 → 自动创建用户（无需单独注册步骤）
+		user, err = dao.CreateCitizen(phone)
+		if err != nil {
+			return nil, "", fmt.Errorf("创建用户失败: %w", err)
+		}
 	}
 
 	token, err := generateToken(user)
