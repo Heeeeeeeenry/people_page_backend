@@ -49,7 +49,7 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		{
 			"操作类型":   "市民上报",
 			"操作前状态": "无",
-			"操作后状态": "待受理",
+			"操作后状态": "预处理",
 			"操作前单位": "",
 			"操作后单位": "市局 / 民意智感中心",
 			"操作人":   name,
@@ -66,9 +66,14 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 	flowStr := string(flowBytes)
 
 	// 信件分类使用默认值 - 后续由AI或管理员处理
-	defaultCat1 := "市民诉求"
-	defaultCat2 := "其他"
-	defaultCat3 := ""
+	defaultCat1 := getString(data, "一级分类")
+	defaultCat2 := getString(data, "二级分类")
+	defaultCat3 := getString(data, "三级分类")
+	if defaultCat1 == "" {
+		defaultCat1 = "市民诉求"
+		defaultCat2 = "其他"
+		defaultCat3 = ""
+	}
 
 	// 构建地址信息（存入备注或用其他字段，目前存入诉求内容尾部作为补充）
 	addressInfo := ""
@@ -98,7 +103,7 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		Content:       fullContent,
 		SpecialTags:   "[]",
 		CurrentUnit:   "市局 / 民意智感中心",
-		CurrentStatus: "待受理",
+		CurrentStatus: "预处理",
 	}
 
 	if err := dao.InsertLetter(letter); err != nil {
@@ -114,12 +119,12 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 	}
 
 	att := &model.LetterAttachment{
-		LetterNo:             letterNo,
-		CityDispatchAttach:   "[]",
-		CountyDispatchAttach: "[]",
-		UnitFeedbackAttach:   "[]",
-		CountyFeedbackAttach: "[]",
-		CallRecordAttach:     "[]",
+		LetterNo:               letterNo,
+		CityDispatchFiles:      "[]",
+		DistrictDispatchFiles:  "[]",
+		HandlerFeedbackFiles:   "[]",
+		DistrictFeedbackFiles:  "[]",
+		CallRecordings:         "[]",
 	}
 	if err := dao.InsertLetterAttachment(att); err != nil {
 		return nil, fmt.Errorf("插入文件表失败: %w", err)
@@ -127,17 +132,17 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 
 	return map[string]interface{}{
 		"信件编号": letterNo,
-		"信件状态": "待受理",
+		"信件状态": "预处理",
 	}, nil
 }
 
 // GetCitizenLetters 获取市民自己的信件列表
 func GetCitizenLetters(phone string) ([]map[string]interface{}, error) {
 	rows, err := dao.DB.Query(`
-		SELECT 信件编号, 群众姓名, 来信时间, 当前信件状态, 诉求内容
-		FROM 信件表
-		WHERE 手机号 = ?
-		ORDER BY 来信时间 DESC
+		SELECT letter_no, citizen_name, received_at, current_status, content
+		FROM letters
+		WHERE phone = ?
+		ORDER BY received_at DESC
 	`, phone)
 	if err != nil {
 		return nil, err

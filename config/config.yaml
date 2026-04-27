@@ -13,7 +13,7 @@ database:
   max_idle_conns: 10
 
 llm:
-  api_key: "sk-d0cd677143b045e1b65600d6ace3f8ec"
+  api_key: "sk-d0c...f8ec"
   api_url: "https://api.deepseek.com/v1/chat/completions"
   model: "deepseek-chat"
   temperature: 0.7
@@ -47,3 +47,19 @@ wechat:
   open:
     app_id: "your_wx_open_appid"
     app_secret: "your_wx_open_secret"
+
+environments:
+  home:
+    database:
+      host: 127.0.0.1
+      user: root
+      password: "000000"
+      port: 3306
+      name: letter_manage_db
+  company:
+    database:
+      host: 10.25.65.177
+      user: root
+      password: "000000"
+      port: 8306
+      name: letter_manage_db

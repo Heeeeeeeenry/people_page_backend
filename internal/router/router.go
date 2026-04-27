@@ -39,6 +39,10 @@ func SetupRouter() *gin.Engine {
 		{
 			// 提交信件
 			auth.POST("/letter/submit", controller.SubmitLetter)
+			// 获取分类
+			auth.GET("/letter/categories", controller.GetCategories)
+			// AI智能分类
+			auth.POST("/letter/classify", controller.ClassifyLetter)
 
 			// 用户相关
 			auth.POST("/auth/logout", controller.Logout)

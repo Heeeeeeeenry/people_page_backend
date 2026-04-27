@@ -1,62 +1,62 @@
 package model
 
-// 信件表 - 民意诉求信件主表
+// Letter 民意诉求信件主表 (对应 letters 表)
 type Letter struct {
-	ID                     int    `json:"序号" db:"序号"`
-	LetterNo              string `json:"信件编号" db:"信件编号"`
-	CitizenName           string `json:"群众姓名" db:"群众姓名"`
-	Phone                 string `json:"手机号" db:"手机号"`
-	IDCard                string `json:"身份证号" db:"身份证号"`
-	ReceivedAt            string `json:"来信时间" db:"来信时间"`
-	Channel               string `json:"来信渠道" db:"来信渠道"`
-	Category1             string `json:"信件一级分类" db:"信件一级分类"`
-	Category2             string `json:"信件二级分类" db:"信件二级分类"`
-	Category3             string `json:"信件三级分类" db:"信件三级分类"`
-	Content               string `json:"诉求内容" db:"诉求内容"`
-	SpecialTags           string `json:"专项关注标签" db:"专项关注标签"` // JSON array
-	CurrentUnit           string `json:"当前信件处理单位" db:"当前信件处理单位"`
-	CurrentStatus         string `json:"当前信件状态" db:"当前信件状态"`
+	ID             int    `json:"id" db:"id"`
+	LetterNo       string `json:"letter_no" db:"letter_no"`
+	CitizenName    string `json:"citizen_name" db:"citizen_name"`
+	Phone          string `json:"phone" db:"phone"`
+	IDCard         string `json:"id_card" db:"id_card"`
+	ReceivedAt     string `json:"received_at" db:"received_at"`
+	Channel        string `json:"channel" db:"channel"`
+	Category1      string `json:"category_l1" db:"category_l1"`
+	Category2      string `json:"category_l2" db:"category_l2"`
+	Category3      string `json:"category_l3" db:"category_l3"`
+	Content        string `json:"content" db:"content"`
+	SpecialTags    string `json:"special_tags" db:"special_tags"`           // JSON array
+	CurrentUnit    string `json:"current_unit" db:"current_unit"`
+	CurrentStatus  string `json:"current_status" db:"current_status"`
 }
 
-// 流转表 - 信件流转记录
+// LetterFlow 信件流转记录 (对应 letter_flows 表)
 type LetterFlow struct {
-	ID          int    `json:"序号" db:"序号"`
-	LetterNo    string `json:"信件编号" db:"信件编号"`
-	FlowRecords string `json:"流转记录" db:"流转记录"` // JSON array
-	CreatedAt   string `json:"创建时间" db:"创建时间"`
-	UpdatedAt   string `json:"更新时间" db:"更新时间"`
+	ID          int    `json:"id" db:"id"`
+	LetterNo    string `json:"letter_no" db:"letter_no"`
+	FlowRecords string `json:"flow_records" db:"flow_records"` // JSON array
+	CreatedAt   string `json:"created_at" db:"created_at"`
+	UpdatedAt   string `json:"updated_at" db:"updated_at"`
 }
 
-// 文件表 - 信件附件
+// LetterAttachment 信件附件 (对应 letter_attachments 表)
 type LetterAttachment struct {
-	ID                  int    `json:"序号" db:"序号"`
-	LetterNo            string `json:"信件编号" db:"信件编号"`
-	CityDispatchAttach  string `json:"市局下发附件" db:"市局下发附件"`   // JSON
-	CountyDispatchAttach string `json:"区县局下发附件" db:"区县局下发附件"` // JSON
-	UnitFeedbackAttach  string `json:"办案单位反馈附件" db:"办案单位反馈附件"` // JSON
-	CountyFeedbackAttach string `json:"区县局反馈附件" db:"区县局反馈附件"` // JSON
-	CallRecordAttach    string `json:"通话录音附件" db:"通话录音附件"`  // JSON
+	ID                     int    `json:"id" db:"id"`
+	LetterNo               string `json:"letter_no" db:"letter_no"`
+	CityDispatchFiles      string `json:"city_dispatch_files" db:"city_dispatch_files"`         // JSON
+	DistrictDispatchFiles  string `json:"district_dispatch_files" db:"district_dispatch_files"` // JSON
+	HandlerFeedbackFiles   string `json:"handler_feedback_files" db:"handler_feedback_files"`   // JSON
+	DistrictFeedbackFiles  string `json:"district_feedback_files" db:"district_feedback_files"` // JSON
+	CallRecordings         string `json:"call_recordings" db:"call_recordings"`                 // JSON
 }
 
-// 单位表 - 组织机构
+// Unit 组织机构 (对应 units 表)
 type Unit struct {
-	ID       int    `json:"id" db:"id"`
-	Level1   string `json:"一级" db:"一级"`
-	Level2   string `json:"二级" db:"二级"`
-	Level3   string `json:"三级" db:"三级"`
-	SysCode  string `json:"系统编码" db:"系统编码"`
+	ID         int    `json:"id" db:"id"`
+	Level1     string `json:"level1" db:"level1"`
+	Level2     string `json:"level2" db:"level2"`
+	Level3     string `json:"level3" db:"level3"`
+	SystemCode string `json:"system_code" db:"system_code"`
 }
 
-// 提示词表
+// Prompt 提示词 (对应 prompts 表)
 type Prompt struct {
-	ID        int    `json:"id" db:"id"`
-	Type      string `json:"类型" db:"类型"`
-	Content   string `json:"内容" db:"内容"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
+	ID          int    `json:"id" db:"id"`
+	PromptType  string `json:"prompt_type" db:"prompt_type"`
+	Content     string `json:"content" db:"content"`
+	CreatedAt   string `json:"created_at" db:"created_at"`
+	UpdatedAt   string `json:"updated_at" db:"updated_at"`
 }
 
-// police_users 表
+// PoliceUser (对应 police_users 表)
 type PoliceUser struct {
 	ID              int    `json:"id" db:"id"`
 	Password        string `json:"password" db:"password"`
@@ -71,7 +71,7 @@ type PoliceUser struct {
 	PoliceNumber    string `json:"police_number" db:"police_number"`
 }
 
-// user_sessions 表
+// UserSession (对应 user_sessions 表)
 type UserSession struct {
 	ID         int    `json:"id" db:"id"`
 	SessionKey string `json:"session_key" db:"session_key"`
@@ -80,4 +80,12 @@ type UserSession struct {
 	CreatedAt  string `json:"created_at" db:"created_at"`
 	ExpiresAt  string `json:"expires_at" db:"expires_at"`
 	UserID     int    `json:"user_id" db:"user_id"`
+}
+
+// Category 信件分类 (对应 categories 表)
+type Category struct {
+	ID     int    `json:"id" db:"id"`
+	Level1 string `json:"level1" db:"level1"`
+	Level2 string `json:"level2" db:"level2"`
+	Level3 string `json:"level3" db:"level3"`
 }

@@ -86,3 +86,34 @@ func SubmitLetter(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+// GetCategories 获取分类树（前端三级联动）
+func GetCategories(c *gin.Context) {
+	tree, err := service.GetCategoriesForFront()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": tree})
+}
+
+// ClassifyLetter AI智能分类
+func ClassifyLetter(c *gin.Context) {
+	var req struct {
+		Content string `json:"描述"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
+		return
+	}
+	if req.Content == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请填写诉求描述"})
+		return
+	}
+	result, err := service.ClassifyContent(req.Content)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": result})
+}
