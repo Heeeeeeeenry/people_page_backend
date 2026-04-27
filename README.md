@@ -128,14 +128,14 @@ export WORK_ENV=home
 
 ## LLM_API_KEY 环境变量
 
-与后端其他项目共用同一个 `LLM_API_KEY` 环境变量，优先级高于 `config.yaml`。
+DeepSeek API Key **只能通过** `LLM_API_KEY` 环境变量设置，配置文件不包含 api_key 字段。
 
 ```bash
 export LLM_API_KEY="sk-your-key-here"
 ./server
 ```
 
-启动日志显示 `LLM_API_KEY: applied environment override` 表示已生效。
+> 启动日志显示 `LLM_API_KEY: applied environment override` 表示已生效。若未设置，AI 功能将不可用。
 
 ---
 
