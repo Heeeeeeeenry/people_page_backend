@@ -66,13 +66,13 @@ func InsertLetter(letter *model.Letter) error {
 		INSERT INTO letters (
 			letter_no, citizen_name, phone, id_card, received_at, channel,
 			category_l1, category_l2, category_l3, content, special_tags,
-			current_unit, current_status
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			current_status
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`,
 		letter.LetterNo, letter.CitizenName, letter.Phone, letter.IDCard,
 		letter.ReceivedAt, letter.Channel,
 		letter.Category1, letter.Category2, letter.Category3, letter.Content,
-		letter.SpecialTags, letter.CurrentUnit, letter.CurrentStatus,
+		letter.SpecialTags, letter.CurrentStatus,
 	)
 	return err
 }

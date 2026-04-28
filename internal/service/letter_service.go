@@ -247,7 +247,6 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 		Category3:     cat3,
 		Content:       content,
 		SpecialTags:   "[]",
-		CurrentUnit:   unitStr,
 		CurrentStatus: "预处理",
 	}
 

@@ -14,7 +14,6 @@ type Letter struct {
 	Category3      string `json:"category_l3" db:"category_l3"`
 	Content        string `json:"content" db:"content"`
 	SpecialTags    string `json:"special_tags" db:"special_tags"`           // JSON array
-	CurrentUnit    string `json:"current_unit" db:"current_unit"`
 	CurrentStatus  string `json:"current_status" db:"current_status"`
 }
 

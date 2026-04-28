@@ -102,7 +102,6 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		Category3:     defaultCat3,
 		Content:       fullContent,
 		SpecialTags:   "[]",
-		CurrentUnit:   "市局 / 民意智感中心",
 		CurrentStatus: "预处理",
 	}
 
