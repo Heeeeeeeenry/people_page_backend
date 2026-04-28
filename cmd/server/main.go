@@ -13,6 +13,8 @@ func main() {
 	if err := config.LoadConfig("config/config.yaml"); err != nil {
 		log.Fatalf("加载配置文件失败: %v", err)
 	}
+	// 启动配置自动重载（每1分钟）
+	config.StartAutoReload("config/config.yaml")
 
 	// 连接数据库
 	if err := dao.InitDB(); err != nil {
