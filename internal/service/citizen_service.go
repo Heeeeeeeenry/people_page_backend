@@ -155,15 +155,18 @@ func GetCitizenLetters(phone string) ([]map[string]interface{}, error) {
 
 	var letters []map[string]interface{}
 	for rows.Next() {
-		var no, name, timeStr, status, content string
-		if err := rows.Scan(&no, &name, &timeStr, &status, &content); err != nil {
+		var no, name, timeStr, content string
+		var statusCode int
+		if err := rows.Scan(&no, &name, &timeStr, &statusCode, &content); err != nil {
 			continue
 		}
+		// Map status code to Chinese name
+		statusName := citizenStatusName(statusCode)
 		letters = append(letters, map[string]interface{}{
 			"信件编号": no,
 			"群众姓名": name,
 			"来信时间": timeStr,
-			"当前状态": status,
+			"当前状态": statusName,
 			"诉求内容": truncateContent(content, 100),
 		})
 	}
@@ -176,4 +179,27 @@ func truncateContent(content string, maxLen int) string {
 		return string(runes[:maxLen]) + "..."
 	}
 	return content
+}
+
+// citizenStatusName maps integer status codes to Chinese names for citizen display
+func citizenStatusName(code int) string {
+	names := map[int]string{
+		1:  "预处理",
+		2:  "待区县局下发",
+		3:  "已下发至分县局/支队",
+		4:  "市局越级下发",
+		5:  "已下发至处理单位",
+		6:  "处理中",
+		7:  "待核查",
+		8:  "待分县局/支队审核",
+		9:  "待市局审核",
+		10: "已办结",
+		11: "无效",
+		12: "已退回",
+		13: "已延期",
+	}
+	if name, ok := names[code]; ok {
+		return name
+	}
+	return fmt.Sprintf("未知状态(%d)", code)
 }
