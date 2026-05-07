@@ -8,20 +8,17 @@ type Letter struct {
 	Phone          string `json:"phone" db:"phone"`
 	IDCard         string `json:"id_card" db:"id_card"`
 	ReceivedAt     string `json:"received_at" db:"received_at"`
-	Channel        string `json:"channel" db:"channel"`
-	Category1      string `json:"category_l1" db:"category_l1"`
-	Category2      string `json:"category_l2" db:"category_l2"`
-	Category3      string `json:"category_l3" db:"category_l3"`
+	Channel        int    `json:"channel" db:"channel"`
+	CategoryID     int    `json:"category_id" db:"category_id"`
 	Content        string `json:"content" db:"content"`
-	SpecialTags    string `json:"special_tags" db:"special_tags"`           // JSON array
-	CurrentStatus  string `json:"current_status" db:"current_status"`
+	CurrentStatus  int    `json:"current_status" db:"current_status"`
 }
 
 // LetterFlow 信件流转记录 (对应 letter_flows 表)
 type LetterFlow struct {
 	ID          int    `json:"id" db:"id"`
 	LetterNo    string `json:"letter_no" db:"letter_no"`
-	FlowRecords string `json:"flow_records" db:"flow_records"` // JSON array
+	FlowRecords string `json:"flow_records" db:"flow_records"`
 	CreatedAt   string `json:"created_at" db:"created_at"`
 	UpdatedAt   string `json:"updated_at" db:"updated_at"`
 }
@@ -30,11 +27,11 @@ type LetterFlow struct {
 type LetterAttachment struct {
 	ID                     int    `json:"id" db:"id"`
 	LetterNo               string `json:"letter_no" db:"letter_no"`
-	CityDispatchFiles      string `json:"city_dispatch_files" db:"city_dispatch_files"`         // JSON
-	DistrictDispatchFiles  string `json:"district_dispatch_files" db:"district_dispatch_files"` // JSON
-	HandlerFeedbackFiles   string `json:"handler_feedback_files" db:"handler_feedback_files"`   // JSON
-	DistrictFeedbackFiles  string `json:"district_feedback_files" db:"district_feedback_files"` // JSON
-	CallRecordings         string `json:"call_recordings" db:"call_recordings"`                 // JSON
+	CityDispatchFiles      string `json:"city_dispatch_files" db:"city_dispatch_files"`
+	DistrictDispatchFiles  string `json:"district_dispatch_files" db:"district_dispatch_files"`
+	HandlerFeedbackFiles   string `json:"handler_feedback_files" db:"handler_feedback_files"`
+	DistrictFeedbackFiles  string `json:"district_feedback_files" db:"district_feedback_files"`
+	CallRecordings         string `json:"call_recordings" db:"call_recordings"`
 }
 
 // Unit 组织机构 (对应 units 表)

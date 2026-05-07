@@ -72,22 +72,22 @@ func buildClassificationPrompt() string {
 	// Build tree structure
 	tree := make(map[string]map[string][]string)
 	for _, c := range classifications {
-		if tree[c.Category1] == nil {
-			tree[c.Category1] = make(map[string][]string)
+		if tree[c.Level1] == nil {
+			tree[c.Level1] = make(map[string][]string)
 		}
-		if c.Category3 != "" {
+		if c.Level3 != "" {
 			found := false
-			for _, v := range tree[c.Category1][c.Category2] {
-				if v == c.Category3 {
+			for _, v := range tree[c.Level1][c.Level2] {
+				if v == c.Level3 {
 					found = true
 					break
 				}
 			}
 			if !found {
-				tree[c.Category1][c.Category2] = append(tree[c.Category1][c.Category2], c.Category3)
+				tree[c.Level1][c.Level2] = append(tree[c.Level1][c.Level2], c.Level3)
 			}
-		} else if tree[c.Category1][c.Category2] == nil {
-			tree[c.Category1][c.Category2] = []string{}
+		} else if tree[c.Level1][c.Level2] == nil {
+			tree[c.Level1][c.Level2] = []string{}
 		}
 	}
 
@@ -194,6 +194,14 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 	cat3 := getString(data, "三级分类")
 	content := getString(data, "描述")
 
+	// 查找分类ID
+	catID := 0
+	if cat1 != "" {
+		if cid, err := dao.LookupCategoryID(cat1, cat2, cat3); err == nil {
+			catID = cid
+		}
+	}
+
 	// Handle unit array
 	unitArr, _ := data["处理单位"].([]interface{})
 	unitParts := make([]string, 0)
@@ -241,13 +249,10 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 		Phone:         phone,
 		IDCard:        idCard,
 		ReceivedAt:    nowStr,
-		Channel:       "局长信箱",
-		Category1:     cat1,
-		Category2:     cat2,
-		Category3:     cat3,
+		Channel:       2,   // 局长信箱
+		CategoryID:    catID,
 		Content:       content,
-		SpecialTags:   "[]",
-		CurrentStatus: "预处理",
+		CurrentStatus: 1,   // 预处理
 	}
 
 	if err := dao.InsertLetter(letter); err != nil {

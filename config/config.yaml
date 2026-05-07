@@ -70,3 +70,8 @@ environments:
       password: "000000"
       port: 8306
       name: letter_manage_db
+    redis:
+      host: 10.25.65.177
+      port: 6379
+      password: ""
+      db: 0

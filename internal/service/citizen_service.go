@@ -89,20 +89,25 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 
 	fullContent := content + addressInfo
 
-	// 插入DB
+	// 插入DB - 分类查找 category_id
+	categoryID := 0
+	if defaultCat1 != "" {
+		cid, err := dao.LookupCategoryID(defaultCat1, defaultCat2, defaultCat3)
+		if err == nil {
+			categoryID = cid
+		}
+	}
+
 	letter := &model.Letter{
 		LetterNo:      letterNo,
 		CitizenName:   name,
 		Phone:         phone,
 		IDCard:        idCard,
 		ReceivedAt:    nowStr,
-		Channel:       "市民上报",
-		Category1:     defaultCat1,
-		Category2:     defaultCat2,
-		Category3:     defaultCat3,
+		Channel:       1,   // 市民上报
+		CategoryID:    categoryID,
 		Content:       fullContent,
-		SpecialTags:   "[]",
-		CurrentStatus: "预处理",
+		CurrentStatus: 1,   // 预处理
 	}
 
 	if err := dao.InsertLetter(letter); err != nil {

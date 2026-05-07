@@ -36,28 +36,37 @@ func GetAllUnits() ([]model.Unit, error) {
 	return units, rows.Err()
 }
 
-// GetDistinctClassifications 获取所有不同的分类（去重）
-func GetDistinctClassifications() ([]model.Letter, error) {
+// GetDistinctClassifications 从 categories 表获取所有分类
+func GetDistinctClassifications() ([]model.Category, error) {
 	rows, err := DB.Query(`
-		SELECT DISTINCT category_l1, category_l2, category_l3 
-		FROM letters 
-		WHERE category_l1 IS NOT NULL AND category_l1 != ''
-		ORDER BY category_l1, category_l2, category_l3
+		SELECT id, level1, level2, level3
+		FROM categories
+		ORDER BY level1, level2, level3
 	`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var classifications []model.Letter
+	var cats []model.Category
 	for rows.Next() {
-		var l model.Letter
-		if err := rows.Scan(&l.Category1, &l.Category2, &l.Category3); err != nil {
+		var c model.Category
+		if err := rows.Scan(&c.ID, &c.Level1, &c.Level2, &c.Level3); err != nil {
 			return nil, err
 		}
-		classifications = append(classifications, l)
+		cats = append(cats, c)
 	}
-	return classifications, rows.Err()
+	return cats, rows.Err()
+}
+
+// LookupCategoryID 根据三级分类名查找 category_id
+func LookupCategoryID(l1, l2, l3 string) (int, error) {
+	var id int
+	err := DB.QueryRow(
+		"SELECT id FROM categories WHERE level1 = ? AND level2 = ? AND level3 = ? LIMIT 1",
+		l1, l2, l3,
+	).Scan(&id)
+	return id, err
 }
 
 // InsertLetter 插入信件表记录
@@ -65,14 +74,14 @@ func InsertLetter(letter *model.Letter) error {
 	_, err := DB.Exec(`
 		INSERT INTO letters (
 			letter_no, citizen_name, phone, id_card, received_at, channel,
-			category_l1, category_l2, category_l3, content, special_tags,
+			category_id, content,
 			current_status
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`,
 		letter.LetterNo, letter.CitizenName, letter.Phone, letter.IDCard,
 		letter.ReceivedAt, letter.Channel,
-		letter.Category1, letter.Category2, letter.Category3, letter.Content,
-		letter.SpecialTags, letter.CurrentStatus,
+		letter.CategoryID, letter.Content,
+		letter.CurrentStatus,
 	)
 	return err
 }
