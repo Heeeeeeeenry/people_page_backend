@@ -32,6 +32,8 @@ func SetupRouter() *gin.Engine {
 
 		// 对话流
 		api.POST("/chat/stream", controller.ChatStream)
+		// 非流式对话（小程序）
+		api.POST("/chat", controller.ChatOnce)
 
 		// 需要登录的接口
 		auth := api.Group("")

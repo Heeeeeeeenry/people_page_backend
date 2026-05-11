@@ -183,6 +183,69 @@ func ChatStream(messages []map[string]interface{}, w http.ResponseWriter, flushe
 	}
 }
 
+// ChatOnce 非流式对话（小程序用）
+func ChatOnce(messages []map[string]interface{}) (string, error) {
+	cfg := config.AppConfig.LLM
+	if cfg.APIKey == "" {
+		return "", fmt.Errorf("LLM API key not configured")
+	}
+
+	reqBody := map[string]interface{}{
+		"model":       cfg.Model,
+		"messages":    messages,
+		"temperature": cfg.Temperature,
+		"max_tokens":  cfg.MaxTokens,
+		"stream":      false,
+	}
+
+	bodyBytes, _ := json.Marshal(reqBody)
+	req, err := http.NewRequest("POST", cfg.APIURL, strings.NewReader(string(bodyBytes)))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+cfg.APIKey)
+
+	client := &http.Client{Timeout: 60 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("LLM API returned %d: %s", resp.StatusCode, string(respBytes))
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(respBytes, &result); err != nil {
+		return "", fmt.Errorf("parse response: %w, raw: %s", err, string(respBytes[:min(len(respBytes), 200)]))
+	}
+
+	choices, _ := result["choices"].([]interface{})
+	if len(choices) > 0 {
+		choice, _ := choices[0].(map[string]interface{})
+		msg, _ := choice["message"].(map[string]interface{})
+		content, _ := msg["content"].(string)
+		return content, nil
+	}
+
+	// 检查是否有 error 字段
+	if errMsg, ok := result["error"].(map[string]interface{}); ok {
+		return "", fmt.Errorf("LLM error: %v", errMsg["message"])
+	}
+	if errMsg, ok := result["error"].(string); ok {
+		return "", fmt.Errorf("LLM error: %s", errMsg)
+	}
+
+	return "", fmt.Errorf("no response from LLM, raw: %s", string(respBytes[:min(len(respBytes), 500)]))
+}
+
 // SubmitLetter 提交信件
 func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 	// Extract fields

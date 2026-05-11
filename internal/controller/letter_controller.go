@@ -56,6 +56,31 @@ func ChatStream(c *gin.Context) {
 	}
 }
 
+// ChatOnce 非流式对话（小程序用）
+func ChatOnce(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "读取请求体失败"})
+		return
+	}
+
+	var req struct {
+		Messages []map[string]interface{} `json:"messages"`
+	}
+	if err := json.Unmarshal(body, &req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "解析请求体失败"})
+		return
+	}
+
+	reply, err := service.ChatOnce(req.Messages)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"reply": reply, "content": reply})
+}
+
 // SubmitLetter 提交信件（需登录，自动填入手机号）
 func SubmitLetter(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
