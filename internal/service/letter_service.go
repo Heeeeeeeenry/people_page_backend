@@ -16,12 +16,15 @@ import (
 
 // GetSystemPrompt 获取系统提示词
 func GetSystemPrompt() (string, error) {
-	// 1. 获取群众提示词
+	// 1. 获取群众提示词（DB 没有就用默认值）
+	var basePrompt string
 	prompt, err := dao.GetPromptByType("群众提示词")
 	if err != nil {
-		return "", fmt.Errorf("获取提示词失败: %w", err)
+		log.Printf("获取提示词失败，使用默认值: %v", err)
+		basePrompt = "你是一个热情的便民服务助手，致力于帮助群众解决问题、提供信息咨询。请用友好、专业的语气回答。"
+	} else {
+		basePrompt = prompt.Content
 	}
-	basePrompt := prompt.Content
 
 	// 2. 构建单位提示词
 	unitsPrompt := buildUnitsPrompt()

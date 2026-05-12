@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"people-page-backend/internal/controller"
 	"people-page-backend/internal/middleware"
@@ -34,6 +36,16 @@ func SetupRouter() *gin.Engine {
 		api.POST("/chat/stream", controller.ChatStream)
 		// 非流式对话（小程序）
 		api.POST("/chat", controller.ChatOnce)
+
+		// 健康探测
+		api.GET("/config/ping", func(c *gin.Context) { c.String(200, "pong") })
+
+		// 环境信息
+		api.GET("/config/env", func(c *gin.Context) {
+			env := os.Getenv("WORK_ENV")
+			if env == "" { env = "local" }
+			c.JSON(200, gin.H{"env": env})
+		})
 
 		// 需要登录的接口
 		auth := api.Group("")
