@@ -316,6 +316,8 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 		CategoryID:    catID,
 		Content:       content,
 		CurrentStatus: 1,   // 预处理
+		CreatedAt:     nowStr,
+		UpdatedAt:     nowStr,
 	}
 
 	if err := dao.InsertLetter(letter); err != nil {

@@ -108,6 +108,8 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		CategoryID:    categoryID,
 		Content:       fullContent,
 		CurrentStatus: 1,   // 预处理
+		CreatedAt:     nowStr,
+		UpdatedAt:     nowStr,
 	}
 
 	if err := dao.InsertLetter(letter); err != nil {
