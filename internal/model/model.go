@@ -12,6 +12,8 @@ type Letter struct {
 	CategoryID     int    `json:"category_id" db:"category_id"`
 	Content        string `json:"content" db:"content"`
 	CurrentStatus  int    `json:"current_status" db:"current_status"`
+	CreatedAt      string `json:"created_at" db:"created_at"`
+	UpdatedAt      string `json:"updated_at" db:"updated_at"`
 }
 
 // LetterFlow 信件流转记录 (对应 letter_flows 表)
