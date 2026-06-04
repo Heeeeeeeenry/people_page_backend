@@ -2,6 +2,7 @@ package router
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"people-page-backend/internal/controller"
@@ -10,6 +11,11 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	// Health check（Docker 健康检查）
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
 
 	// CORS中间件
 	r.Use(corsMiddleware())
@@ -47,16 +53,20 @@ func SetupRouter() *gin.Engine {
 			c.JSON(200, gin.H{"env": env})
 		})
 
+		// 获取分类（公开，未绑定手机号的用户也需要）
+		api.GET("/letter/categories", controller.GetCategories)
+		// AI智能分类（公开）
+		api.POST("/letter/classify", controller.ClassifyLetter)
+
 		// 需要登录的接口
 		auth := api.Group("")
 		auth.Use(middleware.AuthRequired())
 		{
 			// 提交信件
 			auth.POST("/letter/submit", controller.SubmitLetter)
-			// 获取分类
-			auth.GET("/letter/categories", controller.GetCategories)
-			// AI智能分类
-			auth.POST("/letter/classify", controller.ClassifyLetter)
+
+			// 文件上传
+			auth.POST("/upload", controller.UploadFile)
 
 			// 用户相关
 			auth.POST("/auth/logout", controller.Logout)
@@ -72,6 +82,14 @@ func SetupRouter() *gin.Engine {
 		api.GET("/amap/poi/around", controller.SearchPOIAround)
 		api.GET("/amap/input/tips", controller.GetInputTips)
 	}
+
+	// 静态文件服务（上传的文件通过 /media/ 路径访问）
+	mediaRoot := os.Getenv("MEDIA_ROOT")
+	if mediaRoot == "" {
+		mediaRoot = "./media"
+	}
+	absMediaRoot, _ := filepath.Abs(mediaRoot)
+	r.Static("/media", absMediaRoot)
 
 	return r
 }

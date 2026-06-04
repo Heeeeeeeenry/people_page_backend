@@ -51,6 +51,8 @@ wechat:
   miniprogram:
     app_id: "wx188e75c5c9b12285"
     app_secret: "ad7679e8f82e4e0d3583ea32597cea0f"
+  miniprograms:
+    wxe2ae7bc9c374de12: "f13aeb5924f424bc24a310f445e62587"
   open:
     app_id: "your_wx_open_appid"
     app_secret: "your_wx_open_secret"

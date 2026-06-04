@@ -67,7 +67,8 @@ type SetPasswordRequest struct {
 
 // WechatLoginRequest 微信登录请求
 type WechatLoginRequest struct {
-	Code string `json:"code" binding:"required"`
+	Code  string `json:"code" binding:"required"`
+	AppID string `json:"appid"` // 可选：指定小程序 appid，不传则用默认
 }
 
 // BindPhoneRequest 微信绑定手机号请求
@@ -263,7 +264,7 @@ func (ac *AuthController) wechatLogin(c *gin.Context) {
 		return
 	}
 
-	user, token, loggedIn, err := service.WechatMiniProgramLogin(req.Code)
+	user, token, loggedIn, err := service.WechatMiniProgramLogin(req.Code, req.AppID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

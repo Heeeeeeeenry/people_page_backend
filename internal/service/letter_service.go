@@ -314,7 +314,6 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 		CitizenName:   name,
 		Phone:         phone,
 		IDCard:        idCard,
-		ReceivedAt:    nowStr,
 		Channel:       2,   // 局长信箱
 		CategoryID:    catID,
 		Content:       content,
@@ -342,6 +341,7 @@ func SubmitLetter(data map[string]interface{}) (map[string]interface{}, error) {
 		HandlerFeedbackFiles:   "[]",
 		DistrictFeedbackFiles:  "[]",
 		CallRecordings:         "[]",
+		CitizenFiles:           "[]",
 	}
 	if err := dao.InsertLetterAttachment(att); err != nil {
 		return nil, fmt.Errorf("插入文件表失败: %w", err)

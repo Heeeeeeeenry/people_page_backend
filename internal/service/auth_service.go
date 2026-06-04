@@ -139,10 +139,16 @@ func SetPassword(phone, code, newPassword string) error {
 //	3. 查数据库：
 //	   a. openid 已绑定手机号 → 直接登录
 //	   b. openid 未绑定（新用户）→ 返回 openid，前端引导绑定手机号
-func WechatMiniProgramLogin(wxCode string) (*model.CitizenUser, string, bool, error) {
+func WechatMiniProgramLogin(wxCode string, appID string) (*model.CitizenUser, string, bool, error) {
+	// 如果没传 appid，用默认配置的小程序
+	cfg := config.AppConfig.Wechat
+	if appID == "" {
+		appID = cfg.Miniprogram.AppID
+	}
+
 	// 调微信接口
 	session := &wechatSession{}
-	if err := getWechatSession(wxCode, session); err != nil {
+	if err := getWechatSession(wxCode, appID, session); err != nil {
 		return nil, "", false, fmt.Errorf("微信登录失败: %w", err)
 	}
 
@@ -364,16 +370,17 @@ type wechatSession struct {
 }
 
 // getWechatSession 调微信接口获取 session
-func getWechatSession(code string, session *wechatSession) error {
+func getWechatSession(code string, appID string, session *wechatSession) error {
 	cfg := config.AppConfig.Wechat
-	if cfg.Miniprogram.AppID == "" || cfg.Miniprogram.AppSecret == "" {
-		return fmt.Errorf("微信小程序未配置（请设置 app_id 和 app_secret）")
+	secret := cfg.GetMiniprogramSecret(appID)
+	if secret == "" {
+		return fmt.Errorf("小程序未配置（appid: %s 未找到对应 secret）", appID)
 	}
 
 	apiURL := fmt.Sprintf(
 		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		url.QueryEscape(cfg.Miniprogram.AppID),
-		url.QueryEscape(cfg.Miniprogram.AppSecret),
+		url.QueryEscape(appID),
+		url.QueryEscape(secret),
 		url.QueryEscape(code),
 	)
 

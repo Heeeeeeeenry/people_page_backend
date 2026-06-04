@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"encoding/json"
+	"log"
 	"people-page-backend/internal/model"
 )
 
@@ -73,13 +75,13 @@ func LookupCategoryID(l1, l2, l3 string) (int, error) {
 func InsertLetter(letter *model.Letter) error {
 	_, err := DB.Exec(`
 		INSERT INTO letters (
-			letter_no, citizen_name, phone, id_card, received_at, channel,
+			letter_no, citizen_name, phone, id_card, channel,
 			category_id, content,
 			current_status, created_at, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`,
 		letter.LetterNo, letter.CitizenName, letter.Phone, letter.IDCard,
-		letter.ReceivedAt, letter.Channel,
+		letter.Channel,
 		letter.CategoryID, letter.Content,
 		letter.CurrentStatus,
 		letter.CreatedAt, letter.UpdatedAt,
@@ -99,11 +101,11 @@ func InsertLetterFlow(flow *model.LetterFlow) error {
 // InsertLetterAttachment 插入文件表记录
 func InsertLetterAttachment(att *model.LetterAttachment) error {
 	_, err := DB.Exec(`
-		INSERT INTO letter_attachments (letter_no, city_dispatch_files, district_dispatch_files, handler_feedback_files, district_feedback_files, call_recordings)
-		VALUES (?, ?, ?, ?, ?, ?)
+		INSERT INTO letter_attachments (letter_no, city_dispatch_files, district_dispatch_files, handler_feedback_files, district_feedback_files, call_recordings, citizen_files)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 	`,
 		att.LetterNo, att.CityDispatchFiles, att.DistrictDispatchFiles,
-		att.HandlerFeedbackFiles, att.DistrictFeedbackFiles, att.CallRecordings,
+		att.HandlerFeedbackFiles, att.DistrictFeedbackFiles, att.CallRecordings, att.CitizenFiles,
 	)
 	return err
 }
@@ -125,4 +127,32 @@ func GetAllCategories() ([]model.Category, error) {
 		cats = append(cats, c)
 	}
 	return cats, rows.Err()
+}
+
+// CitizenFileInfo represents a citizen-uploaded file entry stored in JSON
+type CitizenFileInfo struct {
+	URL  string `json:"url"`
+	Name string `json:"name"`
+	Size int64  `json:"size"`
+	Type string `json:"type"`
+}
+
+// SaveLetterAttachments saves citizen-uploaded files into letter_attachments.citizen_files JSON field
+func SaveLetterAttachments(letterNo string, files []CitizenFileInfo) error {
+	if len(files) == 0 {
+		return nil
+	}
+	jsonBytes, err := json.Marshal(files)
+	if err != nil {
+		log.Printf("SaveLetterAttachments: marshal files failed for %s: %v", letterNo, err)
+		return err
+	}
+	_, err = DB.Exec(
+		"UPDATE letter_attachments SET citizen_files = ? WHERE letter_no = ?",
+		string(jsonBytes), letterNo,
+	)
+	if err != nil {
+		log.Printf("SaveLetterAttachments: update failed for %s: %v", letterNo, err)
+	}
+	return err
 }

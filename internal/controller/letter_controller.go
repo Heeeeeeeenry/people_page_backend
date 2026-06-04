@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"people-page-backend/internal/dao"
 	"people-page-backend/internal/model"
 	"people-page-backend/internal/service"
 
@@ -103,13 +104,67 @@ func SubmitLetter(c *gin.Context) {
 		}
 	}
 
+	// 提取 files 字段（文件URL数组），在提交后关联
+	var files []dao.CitizenFileInfo
+	if filesRaw, ok := data["files"]; ok {
+		if filesArr, ok := filesRaw.([]interface{}); ok {
+			for _, f := range filesArr {
+				if fMap, ok := f.(map[string]interface{}); ok {
+					cf := dao.CitizenFileInfo{
+						URL:  getStringFromMap(fMap, "url"),
+						Name: getStringFromMap(fMap, "name"),
+						Size: getInt64FromMap(fMap, "size"),
+						Type: getStringFromMap(fMap, "type"),
+					}
+					if cf.URL != "" {
+						files = append(files, cf)
+					}
+				}
+			}
+		}
+	}
+	delete(data, "files")
+
 	result, err := service.SubmitLetterCitizen(data)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	// 提交成功后保存文件关联
+	if len(files) > 0 {
+		if letterNo, ok := result["信件编号"].(string); ok {
+			if err := dao.SaveLetterAttachments(letterNo, files); err != nil {
+				// 文件关联保存失败不阻塞主流程，仅记录日志
+				c.Error(err)
+			}
+		}
+	}
+
 	c.JSON(http.StatusOK, result)
+}
+
+func getStringFromMap(m map[string]interface{}, key string) string {
+	if v, ok := m[key]; ok {
+		if s, ok := v.(string); ok {
+			return s
+		}
+	}
+	return ""
+}
+
+func getInt64FromMap(m map[string]interface{}, key string) int64 {
+	if v, ok := m[key]; ok {
+		switch n := v.(type) {
+		case float64:
+			return int64(n)
+		case int64:
+			return n
+		case int:
+			return int64(n)
+		}
+	}
+	return 0
 }
 
 // GetCategories 获取分类树（前端三级联动）

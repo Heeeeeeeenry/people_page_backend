@@ -1,0 +1,52 @@
+server:
+  port: 8081
+  mode: release
+
+database:
+  host: mysql
+  port: 3306
+  name: letter_manage_db
+  user: root
+  password: "__DB_PASSWORD__"
+  charset: utf8mb4
+  max_open_conns: 25
+  max_idle_conns: 10
+
+redis:
+  host: redis
+  port: 6379
+  password: "__REDIS_PASSWORD__"
+  db: 0
+
+llm:
+  api_key: "__LLM_API_KEY__"
+  api_url: "https://api.deepseek.com/v1/chat/completions"
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 4096
+
+map:
+  amap_key: "__AMAP_KEY__"
+  amap_geocode_url: "https://restapi.amap.com/v3/geocode/geo"
+  amap_regeocode_url: "https://restapi.amap.com/v3/geocode/regeo"
+  amap_poi_url: "https://restapi.amap.com/v3/place/text"
+  amap_around_url: "https://restapi.amap.com/v3/place/around"
+  amap_input_tips_url: "https://restapi.amap.com/v3/assistant/inputtips"
+
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+    - "http://localhost:5174"
+    - "http://localhost:8088"
+    - "http://citizen.letter.local:8088"
+    - "http://127.0.0.1:8088"
+    - "http://letter-web:5173"
+    - "http://people-web:5174"
+
+wechat:
+  miniprograms:
+    wx188e75c5c9b12285: "__WX_APP_SECRET__"
+    wxe2ae7bc9c374de12: "__WX_APP_SECRET__"
+  open:
+    app_id: "your_wx_open_appid"
+    app_secret: "your_wx_open_secret"

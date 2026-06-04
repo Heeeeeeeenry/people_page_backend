@@ -31,8 +31,23 @@ type WechatOpenConfig struct {
 }
 
 type WechatConfig struct {
-	Miniprogram WechatMiniprogramConfig `yaml:"miniprogram"`
-	Open        WechatOpenConfig        `yaml:"open"`
+	Miniprogram  WechatMiniprogramConfig   `yaml:"miniprogram"`
+	Miniprograms map[string]string         `yaml:"miniprograms"` // appid → secret，支持多个小程序
+	Open         WechatOpenConfig          `yaml:"open"`
+}
+
+// GetMiniprogramSecret 根据 appid 查找对应 secret
+// 优先查 miniprograms 映射，回退到 miniprogram 配置（向后兼容）
+func (wc *WechatConfig) GetMiniprogramSecret(appid string) string {
+	if wc.Miniprograms != nil {
+		if secret, ok := wc.Miniprograms[appid]; ok && secret != "" {
+			return secret
+		}
+	}
+	if appid == wc.Miniprogram.AppID {
+		return wc.Miniprogram.AppSecret
+	}
+	return ""
 }
 
 type Config struct {

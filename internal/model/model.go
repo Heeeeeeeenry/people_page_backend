@@ -2,18 +2,17 @@ package model
 
 // Letter 民意诉求信件主表 (对应 letters 表)
 type Letter struct {
-	ID             int    `json:"id" db:"id"`
-	LetterNo       string `json:"letter_no" db:"letter_no"`
-	CitizenName    string `json:"citizen_name" db:"citizen_name"`
-	Phone          string `json:"phone" db:"phone"`
-	IDCard         string `json:"id_card" db:"id_card"`
-	ReceivedAt     string `json:"received_at" db:"received_at"`
-	Channel        int    `json:"channel" db:"channel"`
-	CategoryID     int    `json:"category_id" db:"category_id"`
-	Content        string `json:"content" db:"content"`
-	CurrentStatus  int    `json:"current_status" db:"current_status"`
-	CreatedAt      string `json:"created_at" db:"created_at"`
-	UpdatedAt      string `json:"updated_at" db:"updated_at"`
+	ID            int    `json:"id" db:"id"`
+	LetterNo      string `json:"letter_no" db:"letter_no"`
+	CitizenName   string `json:"citizen_name" db:"citizen_name"`
+	Phone         string `json:"phone" db:"phone"`
+	IDCard        string `json:"id_card" db:"id_card"`
+	Channel       int    `json:"channel" db:"channel"`
+	CategoryID    int    `json:"category_id" db:"category_id"`
+	Content       string `json:"content" db:"content"`
+	CurrentStatus int    `json:"current_status" db:"current_status"`
+	CreatedAt     string `json:"created_at" db:"created_at"`
+	UpdatedAt     string `json:"updated_at" db:"updated_at"`
 }
 
 // LetterFlow 信件流转记录 (对应 letter_flows 表)
@@ -34,6 +33,7 @@ type LetterAttachment struct {
 	HandlerFeedbackFiles   string `json:"handler_feedback_files" db:"handler_feedback_files"`
 	DistrictFeedbackFiles  string `json:"district_feedback_files" db:"district_feedback_files"`
 	CallRecordings         string `json:"call_recordings" db:"call_recordings"`
+	CitizenFiles           string `json:"citizen_files" db:"citizen_files"`
 }
 
 // Unit 组织机构 (对应 units 表)

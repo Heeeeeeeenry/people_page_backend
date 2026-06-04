@@ -103,7 +103,6 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		CitizenName:   name,
 		Phone:         phone,
 		IDCard:        idCard,
-		ReceivedAt:    nowStr,
 		Channel:       1,   // 市民上报
 		CategoryID:    categoryID,
 		Content:       fullContent,
@@ -131,6 +130,7 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		HandlerFeedbackFiles:   "[]",
 		DistrictFeedbackFiles:  "[]",
 		CallRecordings:         "[]",
+		CitizenFiles:           "[]",
 	}
 	if err := dao.InsertLetterAttachment(att); err != nil {
 		return nil, fmt.Errorf("插入文件表失败: %w", err)
@@ -145,10 +145,10 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 // GetCitizenLetters 获取市民自己的信件列表
 func GetCitizenLetters(phone string) ([]map[string]interface{}, error) {
 	rows, err := dao.DB.Query(`
-		SELECT letter_no, citizen_name, received_at, current_status, content
+		SELECT letter_no, citizen_name, created_at, current_status, content
 		FROM letters
 		WHERE phone = ?
-		ORDER BY received_at DESC
+		ORDER BY created_at DESC
 	`, phone)
 	if err != nil {
 		return nil, err
