@@ -136,6 +136,28 @@ func SubmitLetterCitizen(data map[string]interface{}) (map[string]interface{}, e
 		return nil, fmt.Errorf("插入文件表失败: %w", err)
 	}
 
+	// 通知市局民意智感中心（unit_id=1）有新信件上报
+	go func() {
+		notifTitle := "新信件上报"
+		notifMsg := fmt.Sprintf("群众 %s 上报了信件 %s，请及时处理", name, letterNo)
+		now := time.Now().Format("2006-01-02 15:04:05")
+		rows, err := dao.DB.Query("SELECT id FROM police_users WHERE unit_id = 1 AND is_active = 1")
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var userID int
+			if err := rows.Scan(&userID); err != nil {
+				continue
+			}
+			dao.DB.Exec(
+				"INSERT INTO notifications (user_id, type, title, message, letter_no, is_read, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)",
+				userID, "new_letter", notifTitle, notifMsg, letterNo, now,
+			)
+		}
+	}()
+
 	return map[string]interface{}{
 		"信件编号": letterNo,
 		"信件状态": "预处理",

@@ -73,8 +73,14 @@ func LookupCategoryID(l1, l2, l3 string) (int, error) {
 
 // InsertLetter 插入信件表记录
 func InsertLetter(letter *model.Letter) error {
-	_, err := DB.Exec(`
-		INSERT INTO letters (
+	var categoryID interface{}
+	if letter.CategoryID == 0 {
+		categoryID = nil
+	} else {
+		categoryID = letter.CategoryID
+	}
+	_, err := DB.Exec(
+		`INSERT INTO letters (
 			letter_no, citizen_name, phone, id_card, channel,
 			category_id, content,
 			current_status, created_at, updated_at
@@ -82,7 +88,7 @@ func InsertLetter(letter *model.Letter) error {
 	`,
 		letter.LetterNo, letter.CitizenName, letter.Phone, letter.IDCard,
 		letter.Channel,
-		letter.CategoryID, letter.Content,
+		categoryID, letter.Content,
 		letter.CurrentStatus,
 		letter.CreatedAt, letter.UpdatedAt,
 	)
