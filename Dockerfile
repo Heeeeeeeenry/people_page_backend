@@ -13,7 +13,7 @@ ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} \
     go build -trimpath -ldflags="-s -w" -o /app/server ./cmd/server
 
-# ── Stage 2: 运行时镜像（ARM64） ─────────────────────────────
+# ── Stage 2: 运行时镜像（多架构：linux/amd64 + linux/arm64） ─────
 FROM alpine:3.21
 
 RUN apk add --no-cache \
