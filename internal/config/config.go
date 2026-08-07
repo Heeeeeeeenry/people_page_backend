@@ -135,6 +135,18 @@ func LoadConfig(path string) error {
 		log.Println("LLM_API_KEY: applied environment override")
 	}
 
+	// LLM_API_URL 环境变量覆盖 API URL（优先级最高）
+	if envURL := os.Getenv("LLM_API_URL"); envURL != "" {
+		AppConfig.LLM.APIURL = envURL
+		log.Println("LLM_API_URL: applied environment override")
+	}
+
+	// LLM_MODEL 环境变量覆盖模型名称（优先级最高）
+	if envModel := os.Getenv("LLM_MODEL"); envModel != "" {
+		AppConfig.LLM.Model = envModel
+		log.Println("LLM_MODEL: applied environment override")
+	}
+
 	return nil
 }
 
